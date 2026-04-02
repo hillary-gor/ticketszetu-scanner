@@ -747,7 +747,9 @@ export type Database = {
       tickets: {
         Row: {
           created_at: string | null
+          device_id: string | null
           event_id: string | null
+          gate_name: string | null
           id: string
           order_id: string | null
           scanned_at: string | null
@@ -758,7 +760,9 @@ export type Database = {
         }
         Insert: {
           created_at?: string | null
+          device_id?: string | null
           event_id?: string | null
+          gate_name?: string | null
           id?: string
           order_id?: string | null
           scanned_at?: string | null
@@ -769,7 +773,9 @@ export type Database = {
         }
         Update: {
           created_at?: string | null
+          device_id?: string | null
           event_id?: string | null
+          gate_name?: string | null
           id?: string
           order_id?: string | null
           scanned_at?: string | null
@@ -872,6 +878,16 @@ export type Database = {
       increment_promo_usage: {
         Args: { promo_row_id: string }
         Returns: undefined
+      }
+      scan_ticket: {
+        Args: {
+          p_device_id?: string
+          p_gate_name?: string
+          p_offline_scanned_at?: string
+          p_scanned_by: string
+          p_ticket_id: string
+        }
+        Returns: Json
       }
     }
     Enums: {
