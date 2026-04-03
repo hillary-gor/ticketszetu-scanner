@@ -1,4 +1,23 @@
-// app/index.tsx
+/**
+ * ------------------------------------------------------------------------------------
+ * INTERFACE: SECURE AUTHENTICATION GATEWAY
+ * ------------------------------------------------------------------------------------
+ * * CORE ARCHITECTURE:
+ * - Entry Point: Acts as the absolute root route (`/`) of the Expo application.
+ * - Identity Provider: Interfaces directly with Supabase Auth (`signInWithPassword`).
+ * - Session State: Upon successful authentication, Supabase automatically provisions 
+ * a persistent JWT session in local storage.
+ * - Route Guarding: On success, physically ejects the user from the `/` route and 
+ * pushes them into the protected `/(scan)` group via `router.replace()`, preventing 
+ * them from swiping back to the login screen.
+ * * UI/UX DESIGN:
+ * - Keyboard Handling: Uses `KeyboardAvoidingView` to prevent the software keyboard 
+ * from covering the login inputs on smaller devices.
+ * - Dark Mode Enforced: Hardcoded dark palette to match the low-light environments 
+ * typical of nighttime event gates.
+ * ------------------------------------------------------------------------------------
+ */
+
 import React, { useState } from 'react';
 import { 
   View, 
@@ -48,11 +67,9 @@ export default function LoginScreen() {
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       style={styles.container}
     >
-      {/* Light content for dark mode background */}
       <StatusBar barStyle="light-content" />
       
       <View style={styles.content}>
-        {/* Official Brand Header */}
         <View style={styles.headerContainer}>
           <View style={styles.logoContainer}>
             <Image 
@@ -69,7 +86,6 @@ export default function LoginScreen() {
           <Text style={styles.subtitle}>OFFICIAL SCANNER OPS</Text>
         </View>
 
-        {/* Form Inputs */}
         <View style={styles.form}>
           <View style={styles.inputGroup}>
             <Text style={styles.label}>STAFF EMAIL</Text>
@@ -118,7 +134,6 @@ export default function LoginScreen() {
           </TouchableOpacity>
         </View>
 
-        {/* Footer */}
         <View style={styles.footer}>
           <Ionicons name="shield-checkmark-outline" size={14} color="#6B7280" />
           <Text style={styles.footerText}>Enterprise Access Control</Text>
@@ -138,8 +153,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center', 
     paddingHorizontal: 32 
   },
-  
-  // Header Styles
   headerContainer: { 
     alignItems: 'center',
     marginBottom: 48 
@@ -185,8 +198,6 @@ const styles = StyleSheet.create({
     letterSpacing: 2,
     overflow: 'hidden',
   },
-
-  // Form Styles
   form: { 
     gap: 20 
   },
@@ -219,8 +230,6 @@ const styles = StyleSheet.create({
     fontSize: 16, 
     height: '100%',
   },
-  
-  // Button Styles
   button: { 
     backgroundColor: '#FF9500',
     height: 56,
@@ -244,8 +253,6 @@ const styles = StyleSheet.create({
     fontWeight: '800', 
     letterSpacing: 0.5 
   },
-
-  // Footer Styles
   footer: {
     flexDirection: 'row',
     alignItems: 'center',

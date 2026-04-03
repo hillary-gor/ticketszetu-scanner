@@ -1,3 +1,20 @@
+/**
+ * ---------------------------------------------------------------------------------------
+ * INTERFACE: DEPLOYMENT DASHBOARD & AUTHORIZATION GATEWAY
+ * ---------------------------------------------------------------------------------------
+ * * CORE ARCHITECTURE:
+ * - Role-Based Access Control (RBAC): Queries `brand_members` to ensure the 
+ * logged-in agent can only view events belonging to their assigned organization.
+ * - Context Builder: Forces a strict two-step flow (Event -> Gate) to construct 
+ * the secure URL parameters (`eventId`, `gate`) required by the Scanner engine.
+ * - Live Filtering & Time-Gating: Queries the database for 'published' events strictly 
+ * within a rolling 72-hour operational window (24h past, 48h future) to prevent 
+ * deploying scanners to expired or distant future events.
+ * * @critical This UI assumes Row-Level Security (RLS) is strictly enforced on 
+ * the Supabase backend. Do not rely solely on this UI filtering to protect event data.
+ * ---------------------------------------------------------------------------------------
+ */
+
 import React, { useState, useEffect } from 'react';
 import { 
   View, 
@@ -12,7 +29,7 @@ import {
 import { useRouter, Href } from 'expo-router';
 import { supabase } from '../../utils/supabase';
 import { Ionicons } from '@expo/vector-icons';
-import { Database } from '../../types/supabase'; // Adjust path to your types
+import { Database } from '../../types/supabase';
 
 type EventRow = Database['public']['Tables']['events']['Row'];
 
@@ -60,13 +77,21 @@ export default function DashboardScreen() {
         return;
       }
 
-      // 2. Fetch ACTIVE events for those brands (Status: Published)
-      // In a strict prod environment, we would also filter by start_time to only show TODAY'S events
+      // 2. Build the Rolling Operational Window (24h past -> 48h future)
+      const activeWindowStart = new Date();
+      activeWindowStart.setHours(activeWindowStart.getHours() - 24);
+      
+      const activeWindowEnd = new Date();
+      activeWindowEnd.setHours(activeWindowEnd.getHours() + 48);
+
+      // 3. Fetch ACTIVE events within the time gate
       const { data: eventData, error: eventErr } = await supabase
         .from('events')
         .select('*')
         .in('brand_id', brandIds)
         .eq('status', 'published')
+        .gte('start_time', activeWindowStart.toISOString())
+        .lte('start_time', activeWindowEnd.toISOString())
         .order('start_time', { ascending: true });
 
       if (eventErr) throw eventErr;

@@ -1,3 +1,21 @@
+/**
+ * -------------------------------------------------------------------------------------------------
+ * INTERFACE: PROTECTED ROUTE LAYOUT & AUTH GUARD
+ * -------------------------------------------------------------------------------------------------
+ * * CORE ARCHITECTURE:
+ * - Authentication Middleware: Acts as an impenetrable wrapper for all screens 
+ * inside the `/(scan)` route group. 
+ * - Real-Time Session Tracking: Subscribes to Supabase's `onAuthStateChange`. 
+ * If a token expires, or an admin revokes the scanner's access remotely, this 
+ * listener triggers instantly and ejects the user.
+ * - Anti-Flicker UX: Blocks rendering with a pure black loading state (`isAuthenticated === null`) 
+ * until the async storage resolves the session, preventing the dashboard from flashing 
+ * visibly on screen for unauthenticated users.
+ * * @critical Do not remove the `inScanGroup` segment check. It prevents an infinite 
+ * navigation loop between the root layout and this protected layout.
+ * -------------------------------------------------------------------------------------------------
+ */
+
 import { useEffect, useState } from 'react';
 import { Stack, useRouter, useSegments, Href } from 'expo-router';
 import { supabase } from '../../utils/supabase';
@@ -42,7 +60,7 @@ export default function ScanLayout() {
   if (isAuthenticated === null) {
     return (
       <View style={{ flex: 1, backgroundColor: '#050505', justifyContent: 'center', alignItems: 'center' }}>
-        <ActivityIndicator size="large" color="#00FF00" />
+        <ActivityIndicator size="large" color="#FF9500" />
       </View>
     );
   }

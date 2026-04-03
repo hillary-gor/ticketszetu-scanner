@@ -58,7 +58,8 @@
         {
           "cameraPermission": "Allow TicketsZetu to access your camera to validate event tickets."
         }
-      ]
+      ],
+      "expo-audio"
     ],
     "experiments": {
       "typedRoutes": true,
